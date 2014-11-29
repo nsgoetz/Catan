@@ -1,0 +1,21 @@
+{% extends "layouts/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/fixes.html" as fixes %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="sign_up.css">
+
+<div class="container">
+  <h1 style="text-align:center">Sign Up</h2>
+  {% from "_formhelpers.html" import render_field %}
+
+  <form method="POST" action="/sign_up">
+  {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
+  </form>
+</div>
+{% endblock %}
+
+{% block head %}
+{{super()}}
+{{fixes.ie8()}}
+{% endblock %}
