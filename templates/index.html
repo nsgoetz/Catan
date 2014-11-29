@@ -1,0 +1,10 @@
+{% extends "layouts/base.html" %}
+{% block body %}
+<h1 class="center">Settlers of Catan
+<small>By Noah Goetz</small></h1>
+{% if status %}
+<div>
+  Current Status: {{ status }}
+</div>
+{% endif %}
+{% endblock %}
