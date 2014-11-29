@@ -8,12 +8,11 @@ from flask_appconfig import AppConfig
 def create_app(configfile=None):
   app = Flask(__name__)
   Bootstrap(app)
-  db = SQLAlchemy(app)
   app.config.from_object('config')
   #AppConfig(app, configfile)
 
   return app
 
 app = create_app()
-
+db = SQLAlchemy(app)
 from app import views#, models
