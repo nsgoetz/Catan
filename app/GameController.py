@@ -8,13 +8,12 @@ HEX_COLS = 5
 
 def make_game(user_id, color): #rgb
   user = models.User.query.filter_by(id=user_id)
-  player = models.Player(user_id = user_id, color = color)
+  player = models.Player(user = user_id, color = color)
   db.session.add(player)
   buildings = make_possible_buildings()
   (hexes, probabilities, robber_location) = make_hexes(buildings)
   roads = make_possible_roads(buildings)
-  game = models.Game(players = [player], current_player = player,
-                     settup_round = True, started=False,
+  game = models.Game(settup_round = True, started=False,
                      buildings = buildings, hexes = hexes,
                      probabilities = probabilities, roads = roads,
                      robber_location= robber_location)
@@ -87,7 +86,7 @@ def make_possible_roads(buildings):
 def add_player(game_id, user_id, color):
   game = models.Game.query(id=game_id).first()
   if (len(players) < 4):
-    p = models.Player(user_id= user_id, color=color)
+    p = models.Player(user = user_id, color=color)
     db.session.add(p)
     game.players = game.players.append(p)
     db.session.add(game)
@@ -105,8 +104,15 @@ def start_game(game_id):
   if (len(game.players) < 2):
     return (False, "Not Enough Players")
   else:
-    #randomize players
-    game.current_player = game.players[0]
+    #randomize player order
+    order = random.shuffle(game.players)
+    for i in xrange(len(order)):
+      p = order[i]
+      p.order = i
+      db.session.add(p)
+    db.session.commit()
+    game.current_player_id = filter(lambda x: x.order == 0, game.players)[0].id
+    game.started = True
     db.session.add(game)
     db.session.commit()
     return (True, game_id)

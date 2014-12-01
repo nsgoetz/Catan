@@ -1,5 +1,5 @@
 from flask import Flask, session, redirect, url_for, escape, \
-      request, render_template, flash
+      request, render_template, flash, jsonify, json, Response
 from app import app, models, db
 from forms import *
 from GameController import *
@@ -9,8 +9,10 @@ from BoardController import *
 @app.route('/')
 @app.route('/index')
 def index():
-  if 'email' in session and 'name' in session:
-    status = 'Logged in as %s (%s)' % (escape(session['name']), escape(session['email']))
+  if 'user_id' in session:
+    u = models.User.query.get(session["user_id"])
+    print session["user_id"]
+    status = 'Logged in as %s (%s)' % (escape(u.name), escape(u.email))
   else:
     status = 'You are not logged in'
   return render_template("index.html", status=status)
@@ -38,12 +40,11 @@ def create_account():
     if (models.User.query.filter_by(email=email).count() > 0):
       flash("That email already has an account")
       return redirect(url_for('sign_up'))
-    session['email'] = email
-    session['name'] = name
     u = models.User(email=email, name=name)
     db.session.add(u)
     db.session.commit()
     print "committed"
+    session["user_id"] = u.id
     return redirect(url_for('index'))
   else:
     print "here"
@@ -57,8 +58,7 @@ def login():
         flash("We don't seem to have an account with that email")
       else:
         u = models.User.query.filter_by(email=email).first()
-        session['email'] = u.email
-        session['name'] = u.name
+        session["user_id"] = u.id
         return redirect(url_for('index'))
     form = LoginForm()
     return render_template('login.html', form=form)
@@ -66,10 +66,8 @@ def login():
 @app.route('/logout')
 def logout():
     # remove the username from the session if it's there
-    session.pop('email', None)
-    session.pop('name', None)
+    session.pop('user_id', None)
     return redirect(url_for('index'))
-
 
 ### GAME MANAGEMENT
 @app.route('/board', methods=['GET'])
@@ -84,13 +82,48 @@ def create_game():
   game_id = make_game(user_id, color)
   return redirect(url_for(get_game)+str(game_id))
 
-@app.route('/game/<game_id>/', methods=['GET'])
+@app.route('/<game_id>', methods=['GET'])
 def get_game(game_id):
-  user_id = request.data[user_id]
-  game = models.Game.query(id = game_id).first()
-  if (user_id in game.players):
-    #started
-    return
+  if (request.args.get("atr") != None):
+    return game_state(game_id, request.args.get("atr"))
+  user = models.User.query.get(session["user_id"])
+  game = models.Game.query.get(int(game_id))
+  if (user in map(lambda x: x.user, game.players)):
+    if (game.started):
+      return board()
+    else:
+      #notstarted
+      return "waiting for game to start"
   else:
+    if (game.started):
+      flash("That game has already started. You can only see games you are in.")
+      return redirect(url_for("index"))
+    else:
+      return "you must request to join that game"
+
+def game_state(game_id, atr):
+  user = models.User.query.get(session["user_id"])
+  game = models.Game.query.get(int(game_id))
+  player_list = filter(lambda x: x.user == user, game.players)
+  if (len(player_list) == 0):
+    return (False, "You are not playing the game")
+  else:
+    d = game.__dict__
+    del d['_sa_instance_state']
+    d['players'] = map(lambda x: x.id, d['players'])
+    return jsonify(**d)
+
+
+# @app.route('/game/<game_id>', methods=['POST'])
+def player_state(game_id):
+  user = models.User.query.get(session["user_id"])
+  game = models.Game.query.get(int(game_id))
+  player_list = filter(lambda x: x.user == user, game.players)
+  if (len(player_list) == 0):
+    return (False, "You are not playing the game")
+  else:
+    player = player_list[0]
+    dat = flask.jsonify(**(player.__dict__))
+    return Response(dat, status=200, mimetype="application/json")
 
 

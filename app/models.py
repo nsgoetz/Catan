@@ -16,47 +16,52 @@ class User(db.Model):
 class Player(db.Model):
   id = db.Column(db.Integer, primary_key=True)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+  user = db.relationship('User', backref='players')#, foreign_keys="user.id")
+  game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+  game = db.relationship('Game', backref='players', foreign_keys="Player.game_id")
   color = db.Column(db.Integer, nullable=False) #rrrgggbbb
+  order = db.Column(db.Integer)
 
-  brick = db.Column(db.Integer, default=0, nullable=False)
-  ore = db.Column(db.Integer, default=0, nullable=False)
-  lumber = db.Column(db.Integer, default=0, nullable=False)
-  wool = db.Column(db.Integer, default=0, nullable=False)
-  grain = db.Column(db.Integer, default=0, nullable=False)
-  devcards = db.Column(db.Text)
+  # brick = db.Column(db.Integer, default=0, nullable=False)
+  # ore = db.Column(db.Integer, default=0, nullable=False)
+  # lumber = db.Column(db.Integer, default=0, nullable=False)
+  # wool = db.Column(db.Integer, default=0, nullable=False)
+  # grain = db.Column(db.Integer, default=0, nullable=False)
+  resources = db.Column(db.PickleType)
+  devcards = db.Column(db.PickleType)
 
-  cities = db.Column(db.Text)
-  settlements = db.Column(db.Text)
-  roads = db.Column(db.Text)
+  cities = db.Column(db.PickleType)
+  settlements = db.Column(db.PickleType)
+  roads = db.Column(db.PickleType)
 
-  largest_army = db.Column(db.Bool, default=False)
+  largest_army = db.Column(db.Boolean, default=False)
   knights_played = db.Column(db.Integer, default=0, nullable=False)
 
-  longest_road = db.Column(db.Bool, default=False, nullable=False)
+  longest_road = db.Column(db.Boolean, default=False, nullable=False)
   longest_road_len = db.Column(db.Integer, default=0, nullable=False)
 
 
   def __repr__(self):
-    return '<Player id:%r>' % (self.id)
+    return '<Player id:%r user_id:%r game_id:%r>' % (self.id, self.user_id, self.game_id)
 
 class Game(db.Model):
   id = db.Column(db.Integer, primary_key=True)
-  players = db.relationship('Player', backref='game', lazy='dynamic') #?how
-  current_player = db.Column(db.Integer, db.ForeignKey('player.id'))
+  current_player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
+  current_player = db.relationship('Player', backref='players', foreign_keys='Game.current_player_id')
   settup_round = db.Column(db.Boolean)
   started = db.Column(db.Boolean, default = False)
 
-  buildings = db.Column(db.Text) #(row,col) -> (owner, level) (defualt None)
-  roads = db.Column(db.Text)
-  hexes = db.Column(db.Text) #(hex_row, hex_col) -> (resource, probability)
-  probabilities = db.Column(db.Text)
-  robber_location = db.Column(db.Integer)
+  buildings = db.Column(db.PickleType) #(row,col) -> (owner, level) (defualt None)
+  roads = db.Column(db.PickleType)
+  hexes = db.Column(db.PickleType) #(hex_row, hex_col) -> (resource, probability)
+  probabilities = db.Column(db.PickleType)
+  robber_location = db.Column(db.PickleType)
 
-  largest_army_player = db.Column(db.Integer, db.ForeignKey('player.id'))
-  largest_army_size = db.Column(db.Integer, default=2)
-  longest_road_player = db.Column(db.Integer, db.ForeignKey('player.id'))
-  longest_road_size = db.Column(db.Integer, default=4)
+  largest_army_player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
+  largest_army_player = db.relationship('Player', foreign_keys='Game.largest_army_player_id')
+  longest_road_player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
+  longest_road_player = db.relationship('Player', foreign_keys='Game.longest_road_player_id')
   #passhash = db.Column(db.PasswordType(schemes='CRYPT', index=False, unique=False)
 
   def __repr__(self):
-    return '<Game %r>' % (self.nickname)
+    return '<Game %r>' % (self.id)
