@@ -1,17 +1,15 @@
-{% extends "bootstrap/base.html" %}
+{% extends "layouts/base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "bootstrap/fixes.html" as fixes %}
 
-{% block content %}
+{% block body %}
 <link rel="stylesheet" type="text/css" href="login.css">
 
 <div class="container">
-  <h1 style="text-align:center">Setlers of Catan</h1>
-
-  <h2 style="text-align:center">Sign Up</h2>
+  <h2 style="text-align:center">Login</h2>
   {% from "_formhelpers.html" import render_field %}
 
-  <form method="POST" action="/create_account">
+  <form method="POST" action="/login">
   {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
   </form>
 </div>

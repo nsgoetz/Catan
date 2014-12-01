@@ -1,0 +1,23 @@
+{%extends "layouts/base.html"%}
+{%block body%}
+<link rel="stylesheet" type="text/css" href="/static/css/board_styles.css">
+<div class="game">
+  <div class="leftboard">
+    <div class="name">
+      Noah
+    </div>
+  </div>
+  <div class="rightboard">
+    <div id="edges" class="board">
+      {%for ((x0, y0), (x1, y1))  in edges%}
+        <div id={{x0+":"+y0+":"+x1+":"+y1}} class="edge">
+        </div>
+      {%endfor%}
+    </div>
+    <div id="verticies" class="board">
+    </div>
+    <div id="hexes" class="board">
+    </div>
+  </div>
+</div>
+{%endblock%}

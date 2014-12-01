@@ -3,7 +3,7 @@ from flask import Flask, session, redirect, url_for, escape, \
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask_bootstrap import Bootstrap
 from flask_appconfig import AppConfig
-
+from flask.ext.bcrypt import Bcrypt
 
 def create_app(configfile=None):
   app = Flask(__name__)
@@ -15,4 +15,5 @@ def create_app(configfile=None):
 
 app = create_app()
 db = SQLAlchemy(app)
-from app import views#, models
+bcrypt = Bcrypt(app)
+from app import views, models

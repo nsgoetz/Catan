@@ -9,7 +9,7 @@
   <h1 style="text-align:center">Sign Up</h2>
   {% from "_formhelpers.html" import render_field %}
 
-  <form method="POST" action="/sign_up">
+  <form method="POST" action="/create_account">
   {{ wtf.quick_form(form, button_map={'submit_button': 'primary'}) }}
   </form>
 </div>
