@@ -1,0 +1,22 @@
+{%extends "layouts/base.html"%}
+{%block body%}
+<script type="text/javascript" src={{url_for('static', filename="js/prestart.js")}}></script>
+<link rel="stylesheet" type="text/css" href={{url_for('static', filename="css/board_styles.css")}}>
+<div class="center title">
+  Hi {{user.name}}! Choose your color:
+</div>
+<div class="color-picker">
+  <form method="POST" action={{"/create_game"}}>
+    <select name="color" class="color-selector">
+    {%for color in colors%}
+      <option style={{"background-color:"+color}}>{{color}}</option>
+    {%endfor%}
+    </select>
+    <div>
+      <button class="btn btn-primary join">
+        Make Game
+      </button>
+    </div>
+  </form>
+</div>
+{%endblock%}
