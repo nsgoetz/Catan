@@ -94,8 +94,12 @@ def board(game_id = None):
     vertex_strings = []
     for (x, y) in g.buildings:
       vertex_strings.append("%s,%s" % (x, y))
+    hex_strings = []
+    for (x, y) in g.hexes:
+      hex_strings.append(["%s,%s" % (x, y), g.hexes[(x,y)][0], g.hexes[(x,y)][1]])
     return render_template("board.html", current_player = g.current_player,
-            players=players, road_strings = road_strings, vertex_strings=vertex_strings)
+            players=players, road_strings = road_strings,
+            vertex_strings=vertex_strings, hex_strings=hex_strings)
   else:
     return render_template("board.html")
 

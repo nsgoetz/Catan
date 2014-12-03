@@ -58,8 +58,8 @@ def make_hexes(buildings):
   for p in xrange(2,13):
     probabilities[p] = []
   for (col, row) in buildings:
-    if ((row % 2 == 1) and ((col-1, row-1) in buildings) and
-        ((col+1, row-1) in buildings) and (col, row-3) in buildings):
+    if ((row % 2 == 0) and ((col+1, row+1) in buildings) and
+        ((col-1, row+1) in buildings) and (col, row+3) in buildings):
       if (len(resources) == 0):
         raise InsufficientResources
       else:

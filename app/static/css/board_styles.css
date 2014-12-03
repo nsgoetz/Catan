@@ -47,6 +47,7 @@
 .players {
   padding-bottom: 20px;
 }
+
 .board {
   position: relative;
   width: 100px;
@@ -84,9 +85,48 @@
   position: absolute;
   background-color: BlanchedAlmond;
 }
+.hex {
+  position: absolute;
+}
 
-.probabilities{
+img {
+  width: 140px;
+  height: auto;
+  background-color: transparent;
+}
+.vert-center {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+.wool .probability{
+  background-color: Green;
+}
+.lumber .probability{
+  background-color: Brown;
+}
+.desert .probability{
+  background-color: Yellow;
+}
+.brick .probability{
+  background-color: Red;
+}
+.grain .probability{
+  background-color: Gold;
+}
+.ore .probability{
+  background-color: Silver;
+}
+.probability {
   border-radius: 50%;
   position: absolute;
-  background-color: Bisque;
-}
+/*  background-color: Bisque;
+*/  width: 30px;
+  height: 30px;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+/*  top:30;
+*/}

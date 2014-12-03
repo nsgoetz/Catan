@@ -27,6 +27,19 @@
       {%endfor%}
     </div>
     <div id="hexes" class="board">
+      {%for h in hex_strings%}
+        <div id={{h[0]}} class="hex {{h[1]}}">
+<!--         <img src={{url_for('static', filename="images/"+h[1]+".jpg")}}>
+        </img>
+ -->        {%if h[2]%}
+          <div class="probability">
+            <div class="vert-center">
+              {{h[2]}}
+            </div>
+          </div>
+          {%endif%}
+        </div>
+      {%endfor%}
     </div>
   </div>
 </div>

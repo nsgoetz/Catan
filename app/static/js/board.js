@@ -45,15 +45,40 @@ $(document).ready(function() {
 
   $.each($(".vertex"), function(i, e){
     var cArr = e.id.split(",");
-    var r = cArr[0]
-    var c = cArr[1]
-    var CDict = vertex_coordinates_2(r, c)
+    var c = cArr[0]
+    var r = cArr[1]
+    var CDict = vertex_coordinates_2(c, r)
     $(e).css({
       width: String(vertex_size) + "px",
       height: String(vertex_size) + "px",
       top: String(CDict.y)+"px",
       left: String(CDict.x )+"px"
     });
+    $(e).click(function(){
+      console.log("clicled vertex ", c, r)
+    })
+  })
+
+
+  $.each($(".hex"), function(i, e){
+    var cArr = e.id.split(",");
+    var c = cArr[0]
+    var r = cArr[1]
+    var CDict = vertex_coordinates_2(c, r)
+    $(e).css({
+      width: String(vertex_size) + "px",
+      height: String(vertex_size) + "px",
+      top: String(CDict.y)+"px",
+      left: String(CDict.x-side_len)+"px"
+    });
+    $.each($(e).children(".probability"), function(i, el){
+      $(el).css({
+        top: String(side_len*5/6)+"px",
+        left: String(side_len)+"px"
+    })})
+    $(e).click(function(){
+      console.log("clicled hex ", c, r)
+    })
   })
 
 })
