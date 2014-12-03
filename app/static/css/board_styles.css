@@ -1,4 +1,6 @@
-
+.game{
+  margin-top: 20px;
+}
 .leftboard {
   width: 25%;
   height: 100%;
@@ -7,19 +9,19 @@
 }
 
 .rightboard {
-  width: 75%;
-  height: 100%;
-  float: right;
-  background-color: Blue;
+  float: left;
+  display: inline-block;
 }
 
 .name {
   font-size: 24px;
   font-family: "Helvetica";
-  font-weight: bold;
   text-align: center;
   border-radius: 5px;
   margin: 5px 25%;
+}
+.current-player{
+  font-weight: bold;
 }
 .waiting {
   text-align: center;
@@ -41,4 +43,50 @@
 .color-selector{
   margin: 5px 5px;
   padding: 5px 5px;
+}
+.players {
+  padding-bottom: 20px;
+}
+.board {
+  position: relative;
+  width: 100px;
+  margin-left: 50px;
+}
+
+.edge {
+  background-color: BlanchedAlmond ;
+  position: absolute;
+}
+.side-edge {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg)
+  -ms-transform: rotate(90deg)
+  transform: rotate(90deg)
+]}
+
+.left-edge {
+  -webkit-transform: rotate(30deg);
+  -moz-transform: rotate(30deg);
+  -ms-transform: rotate(30deg);
+  transform: rotate(30deg);
+}
+
+.right-edge {
+  -webkit-transform: rotate(-30deg);
+  -moz-transform: rotate(-30deg);
+  -ms-transform: rotate(-30deg);
+  transform: rotate(-30deg);
+}
+
+
+.vertex {
+  border-radius: 50%;
+  position: absolute;
+  background-color: BlanchedAlmond;
+}
+
+.probabilities{
+  border-radius: 50%;
+  position: absolute;
+  background-color: Bisque;
 }

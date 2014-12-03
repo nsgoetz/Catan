@@ -1,22 +1,30 @@
 {%extends "layouts/base.html"%}
 {%block body%}
-<link rel="stylesheet" type="text/css" href="/static/css/board_styles.css">
+<script type="text/javascript" src={{url_for('static', filename="js/board.js")}}></script>
+<link rel="stylesheet" type="text/css" href={{url_for('static', filename="css/board_styles.css")}}>
 <div class="game">
   <div class="leftboard">
-    {%for p in players%}
-    <div class="name" style="background-color:{{p.color}}" >
-      {{p.name}}
+    <div class="players">
+      <h1 class="center">Players</h1>
+      {%for p in players%}
+      <div  {%if p == current_player%} class="name current-player" {%else%} class="name" {%endif%} style="background-color:{{p.color}}" >
+        {{p.user.name}}
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %}
   </div>
   <div class="rightboard">
     <div id="edges" class="board">
-      {%for ((x0, y0), (x1, y1))  in edges%}
-        <div id={{x0+":"+y0+":"+x1+":"+y1}} class="edge">
+      {%for r in road_strings%}
+        <div id={{r[1]}} class={%if r[0][0] == r[0][2]%}"edge side-edge"{%elif r[0][1] < r[0][3]%}"edge left-edge"{%else%}"edge right-edge"{%endif%}>
         </div>
       {%endfor%}
     </div>
     <div id="verticies" class="board">
+      {%for s in vertex_strings%}
+        <div id={{s}} class="vertex">
+        </div>
+      {%endfor%}
     </div>
     <div id="hexes" class="board">
     </div>

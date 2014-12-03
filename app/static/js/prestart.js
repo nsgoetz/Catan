@@ -5,6 +5,11 @@ $(document).ready(function() {
     $(".title").css("background-color", color)
   })
 
-  function start_game(){
-  }
 })
+function start_game(game_id){
+  $.ajax({
+    type: "POST",
+    url: "/games/"+game_id+"/start",
+    success: function(data){location.reload();}
+  })
+}

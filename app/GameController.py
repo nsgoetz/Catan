@@ -16,10 +16,7 @@ POSSIBLE_COLORS = ["CornflowerBlue",
                    "Aqua",
                    "White"]
 
-def make_game(user_id, color): #rgb
-  user = models.User.query.filter_by(id=user_id)
-  player = models.Player(user = user_id, color = color)
-  db.session.add(player)
+def make_game(): #rgb
   buildings = make_possible_buildings()
   (hexes, probabilities, robber_location) = make_hexes(buildings)
   roads = make_possible_roads(buildings)
@@ -86,12 +83,12 @@ def make_hexes(buildings):
 
 def make_possible_roads(buildings):
   roads = {} #((row1, col1), (row2, col2)) -> owner (defualt None, (row1 < row2))
-  dirs = [(1,0), (1, 1), (1, -1)]
-  for (r, c) in buildings:
-    for (dr, dc) in dirs:
-      r2, c2 = r+dr, c+dc
-      if (r2, c2) in buildings:
-        roads[((r,c), (r2, c2))] = None
+  dirs = [(0, 1), (1, 1), (1, -1)]
+  for (c, r) in buildings:
+    for (dc, dr) in dirs:
+      c2, r2 = c+dc, r+dr
+      if (c2, r2) in buildings:
+        roads[((c, r), (c2, r2))] = None
   return roads
 
 def add_player(game_id, user_id, color):
@@ -112,14 +109,15 @@ def remove_player(game_id, player_id):
   db.session.commit
 
 def start_game(game_id):
-  game = models.Game.query(id = game_id).first()
+  game = models.Game.query.get(game_id)
   if (len(game.players) < 2):
     return (False, "Not Enough Players")
   else:
     #randomize player order
-    order = random.shuffle(game.players)
-    for i in xrange(len(order)):
-      p = order[i]
+    players = game.players
+    random.shuffle(players)
+    for i in xrange(len(players)):
+      p = players[i]
       p.order = i
       db.session.add(p)
     db.session.commit()

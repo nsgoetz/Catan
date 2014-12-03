@@ -6,7 +6,7 @@
   Hi {{user.name}}! Choose your color:
 </div>
 <div class="color-picker">
-  <form method="POST" action={{"/"+game_id+"/join_game"}}>
+  <form method="POST" action={{"/games/"+game_id+"/join_game"}}>
     <select name="color" class="color-selector">
     {%for color in colors%}
       <option style={{"background-color:"+color}}>{{color}}</option>

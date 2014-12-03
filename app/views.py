@@ -83,31 +83,48 @@ def logout():
 def board(game_id = None):
   if game_id != None:
     g = models.Game.query.get(game_id)
+    print(g.players)
     players = g.players
-    return render_template("board.html", players=players)
+    print g.roads
+    road_strings = []
+    for ((x0, y0), (x1,y1)) in g.roads:
+      k = [x0, y0, x1,y1]
+      s = str(x0)+","+str(y0)+":"+str(x1)+","+str(y1)
+      road_strings.append([k, s])
+    vertex_strings = []
+    for (x, y) in g.buildings:
+      vertex_strings.append("%s,%s" % (x, y))
+    return render_template("board.html", current_player = g.current_player,
+            players=players, road_strings = road_strings, vertex_strings=vertex_strings)
   else:
     return render_template("board.html")
 
-@app.route('/create_game', methods=['GET'])
+@app.route('/new_game', methods=['GET'])
 def create_game():
-  data = request.data
-  user_id = data['user_id']
-  color = data['color']
-  game_id = make_game(user_id, color)
-  return redirect(url_for(get_game)+str(game_id))
+  user = models.User.query.get(session["user_id"])
+  return render_template("new_game.html", colors = POSSIBLE_COLORS, user=user)
 
-@app.route('/<game_id>', methods=['GET'])
+@app.route('/create_game', methods=['POST'])
+def make_new_game():
+  color = request.form.get("color")
+  user = models.User.query.get(session["user_id"])
+  game_id = make_game()
+  add_player(game_id, session["user_id"], color)
+  return redirect('/games/'+str(game_id))
+
+@app.route('/games/<game_id>', methods=['GET'])
 def get_game(game_id):
   # if (request.args.get("atr") != None):
   #   return game_state(game_id, request.args.get("atr"))
+  print game_id
   user = models.User.query.get(session["user_id"])
   game = models.Game.query.get(int(game_id))
   if (user in map(lambda x: x.user, game.players)):
     if (game.started):
-      return board()
+      return board(game.id)
     else:
       #notstarted
-      return render_template("prestart.html", players=game.players) #"waiting for game to start"
+      return render_template("prestart.html", game_id = str(game.id), players=game.players) #"waiting for game to start"
   else:
     if (game.started):
       flash("That game has already started. You can only see games you are in.")
@@ -115,15 +132,23 @@ def get_game(game_id):
     else:
       return render_template("join_game.html", game_id = str(game.id), colors=game.colors_left, user=user)
 
-@app.route('/<game_id>/join_game', methods=['POST'])
+@app.route('/games/<game_id>/join_game', methods=['POST'])
 def join_game(game_id):
   color = request.form.get("color")
   user = models.User.query.get(session["user_id"])
   game = models.Game.query.get(int(game_id))
   add_player(game_id, session["user_id"], color)
-  return redirect('/'+game_id)
+  return redirect('/games/'+game_id)
 
-@app.route('/<game_id>/state', methods=['POST'])
+@app.route('/games/<game_id>/start', methods=['POST'])
+def start(game_id):
+  (success, msg) = start_game(game_id)
+  if not success:
+    flash(msg)
+  return ('', 204)
+
+
+@app.route('/games/<game_id>/state', methods=['POST'])
 def game_state(game_id):
   user = models.User.query.get(session["user_id"])
   game = models.Game.query.get(int(game_id))
