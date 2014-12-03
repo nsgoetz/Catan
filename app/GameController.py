@@ -5,6 +5,16 @@ VERTEX_ROWS = 12
 VERTEX_COLS = 11
 HEX_ROWS = 8
 HEX_COLS = 5
+POSSIBLE_COLORS = ["CornflowerBlue",
+                   "Coral",
+                   "DarkSalmon",
+                   "LightGreen",
+                   "RoyalBlue",
+                   "Violet",
+                   "FireBrick",
+                   "OliveDrab",
+                   "Aqua",
+                   "White"]
 
 def make_game(user_id, color): #rgb
   user = models.User.query.filter_by(id=user_id)
@@ -16,7 +26,8 @@ def make_game(user_id, color): #rgb
   game = models.Game(settup_round = True, started=False,
                      buildings = buildings, hexes = hexes,
                      probabilities = probabilities, roads = roads,
-                     robber_location= robber_location)
+                     robber_location= robber_location,
+                     colors_left=POSSIBLE_COLORS)
   db.session.add(game)
   db.session.commit()
   return game.id
@@ -84,17 +95,18 @@ def make_possible_roads(buildings):
   return roads
 
 def add_player(game_id, user_id, color):
-  game = models.Game.query(id=game_id).first()
-  if (len(players) < 4):
-    p = models.Player(user = user_id, color=color)
+  game = models.Game.query.get(game_id)
+  if (len(game.players) < 4):
+    p = models.Player(user_id = user_id, color=color, game_id=game_id)
+    game.colors_left = filter(lambda x: x != color, game.colors_left)
     db.session.add(p)
-    game.players = game.players.append(p)
     db.session.add(game)
     db.session.commit()
+  print "added"
   return p.id
 
 def remove_player(game_id, player_id):
-  game = models.Game.query.all
+  game = models.Game.query.get(game_id)
   game.players = filter(lambda x: x.id != player_id, game.players)
   db.session.add(game)
   db.session.commit

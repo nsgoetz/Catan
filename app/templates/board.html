@@ -3,9 +3,11 @@
 <link rel="stylesheet" type="text/css" href="/static/css/board_styles.css">
 <div class="game">
   <div class="leftboard">
-    <div class="name">
-      Noah
+    {%for p in players%}
+    <div class="name" style="background-color:{{p.color}}" >
+      {{p.name}}
     </div>
+    {% endfor %}
   </div>
   <div class="rightboard">
     <div id="edges" class="board">

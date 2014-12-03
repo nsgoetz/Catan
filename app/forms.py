@@ -1,7 +1,9 @@
 from flask_wtf import Form, RecaptchaField
 from flask_wtf import Form, RecaptchaField
 from wtforms import TextField, HiddenField, ValidationError, RadioField,\
-    BooleanField, SubmitField, IntegerField, FormField, PasswordField, validators
+    BooleanField, SubmitField, IntegerField, FormField, PasswordField, validators, \
+    SelectField
+
 from wtforms.validators import *
 
 class SignupForm(Form):

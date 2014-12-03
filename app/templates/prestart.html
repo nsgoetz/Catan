@@ -1,0 +1,14 @@
+{%extends "layouts/base.html"%}
+{%block body%}
+<link rel="stylesheet" type="text/css" href="/static/css/board_styles.css">
+<div class="waiting">
+  {%for p in players%}
+  <div class="name" style={{"background-color:"+p.color}} >
+    {{p.user.name}}
+  </div>
+  {% endfor %}
+  <button class="btn btn-primary start" {%if players|length <2%} disabled {%endif%}>
+    Start Game
+  </button>
+</div>
+{%endblock%}

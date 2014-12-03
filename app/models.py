@@ -19,7 +19,7 @@ class Player(db.Model):
   user = db.relationship('User', backref='players')#, foreign_keys="user.id")
   game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
   game = db.relationship('Game', backref='players', foreign_keys="Player.game_id")
-  color = db.Column(db.Integer, nullable=False) #rrrgggbbb
+  color = db.Column(db.String(80)) #rrrgggbbb
   order = db.Column(db.Integer)
 
   # brick = db.Column(db.Integer, default=0, nullable=False)
@@ -50,6 +50,7 @@ class Game(db.Model):
   current_player = db.relationship('Player', backref='players', foreign_keys='Game.current_player_id')
   settup_round = db.Column(db.Boolean)
   started = db.Column(db.Boolean, default = False)
+  colors_left = db.Column(db.PickleType)
 
   buildings = db.Column(db.PickleType) #(row,col) -> (owner, level) (defualt None)
   roads = db.Column(db.PickleType)

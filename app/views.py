@@ -52,14 +52,23 @@ def create_account():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST' and (request.form.get('email') != None):
-      email = request.form.get('email')
-      if (models.User.query.filter_by(email=email).count() == 0):
-        flash("We don't seem to have an account with that email")
-      else:
+    if request.method == 'POST':
+      print "post WHat"
+      if (request.form.get('email') != None):
+        email = request.form.get('email')
+        if (models.User.query.filter_by(email=email).count() == 0):
+          flash("We don't seem to have an account with that email")
+        else:
+          u = models.User.query.filter_by(email=email).first()
+          session["user_id"] = u.id
+          return redirect(url_for('index'))
+      else: #iOS method
+        print "yolo"
+        print request.get_json()
+        email = request.get_json()['email']
         u = models.User.query.filter_by(email=email).first()
         session["user_id"] = u.id
-        return redirect(url_for('index'))
+        return jsonify(success=True, name=u.name, id=u.id)
     form = LoginForm()
     return render_template('login.html', form=form)
 
@@ -71,8 +80,13 @@ def logout():
 
 ### GAME MANAGEMENT
 @app.route('/board', methods=['GET'])
-def board():
-  return render_template("board.html")
+def board(game_id = None):
+  if game_id != None:
+    g = models.Game.query.get(game_id)
+    players = g.players
+    return render_template("board.html", players=players)
+  else:
+    return render_template("board.html")
 
 @app.route('/create_game', methods=['GET'])
 def create_game():
@@ -84,8 +98,8 @@ def create_game():
 
 @app.route('/<game_id>', methods=['GET'])
 def get_game(game_id):
-  if (request.args.get("atr") != None):
-    return game_state(game_id, request.args.get("atr"))
+  # if (request.args.get("atr") != None):
+  #   return game_state(game_id, request.args.get("atr"))
   user = models.User.query.get(session["user_id"])
   game = models.Game.query.get(int(game_id))
   if (user in map(lambda x: x.user, game.players)):
@@ -93,26 +107,36 @@ def get_game(game_id):
       return board()
     else:
       #notstarted
-      return "waiting for game to start"
+      return render_template("prestart.html", players=game.players) #"waiting for game to start"
   else:
     if (game.started):
       flash("That game has already started. You can only see games you are in.")
       return redirect(url_for("index"))
     else:
-      return "you must request to join that game"
+      return render_template("join_game.html", game_id = str(game.id), colors=game.colors_left, user=user)
 
-def game_state(game_id, atr):
+@app.route('/<game_id>/join_game', methods=['POST'])
+def join_game(game_id):
+  color = request.form.get("color")
+  user = models.User.query.get(session["user_id"])
+  game = models.Game.query.get(int(game_id))
+  add_player(game_id, session["user_id"], color)
+  return redirect('/'+game_id)
+
+@app.route('/<game_id>/state', methods=['POST'])
+def game_state(game_id):
   user = models.User.query.get(session["user_id"])
   game = models.Game.query.get(int(game_id))
   player_list = filter(lambda x: x.user == user, game.players)
   if (len(player_list) == 0):
-    return (False, "You are not playing the game")
+    return jsonify(success=False, message="You are not playing the game")
   else:
     d = game.__dict__
     del d['_sa_instance_state']
     d['players'] = map(lambda x: x.id, d['players'])
+    d["success"] = True
+    d['message'] = ""
     return jsonify(**d)
-
 
 # @app.route('/game/<game_id>', methods=['POST'])
 def player_state(game_id):
