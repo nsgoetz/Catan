@@ -12,6 +12,11 @@
       </div>
       {% endfor %}
     </div>
+    {%if not initializing%}
+    <div class="roll vert-align center">
+      {{roll_sum}}
+    </div>
+    {%endif%}
   </div>
   <div class="rightboard">
     <div id="edges" class="board">
@@ -29,15 +34,14 @@
     <div id="hexes" class="board">
       {%for h in hex_strings%}
         <div id={{h[0]}} class="hex {{h[1]}}">
-<!--         <img src={{url_for('static', filename="images/"+h[1]+".jpg")}}>
-        </img>
- -->        {%if h[2]%}
+<!-- <img src={{url_for('static', filename="images/"+h[1]+".jpg")}}> </img> -->
           <div class="probability">
+           {%if h[2]%}
             <div class="vert-center">
               {{h[2]}}
             </div>
+            {%endif%}
           </div>
-          {%endif%}
         </div>
       {%endfor%}
     </div>

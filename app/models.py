@@ -22,11 +22,6 @@ class Player(db.Model):
   color = db.Column(db.String(80)) #rrrgggbbb
   order = db.Column(db.Integer)
 
-  # brick = db.Column(db.Integer, default=0, nullable=False)
-  # ore = db.Column(db.Integer, default=0, nullable=False)
-  # lumber = db.Column(db.Integer, default=0, nullable=False)
-  # wool = db.Column(db.Integer, default=0, nullable=False)
-  # grain = db.Column(db.Integer, default=0, nullable=False)
   resources = db.Column(db.PickleType)
   devcards = db.Column(db.PickleType)
 

@@ -1,6 +1,7 @@
 side_len = 70;
 edge_width = "5px";
 vertex_size = 20;
+var current_player;
 
 function vertex_coordinates(c, r){
   var x = Math.floor((c*Math.sqrt(3)*side_len)/2);
@@ -15,6 +16,16 @@ function vertex_coordinates_2(c, r){
 }
 
 $(document).ready(function() {
+  var pathArray = window.location.pathname.split( '/' );
+  var game_id = pathArray[pathArray.length-1]
+  $.ajax({
+    type: "POST",
+    url:'/games/'+game_id+"/get_game_data",
+    data:{game_id: game_id}
+  }).success(function(data){
+    current_player = data.current_player;
+    color = data.color;
+  });
 
   $.each($(".edge"), function(i, e){
     var vertexArr = e.id.split(":");
@@ -54,9 +65,6 @@ $(document).ready(function() {
       top: String(CDict.y)+"px",
       left: String(CDict.x )+"px"
     });
-    $(e).click(function(){
-      console.log("clicled vertex ", c, r)
-    })
   })
 
 
@@ -68,17 +76,19 @@ $(document).ready(function() {
     $(e).css({
       width: String(vertex_size) + "px",
       height: String(vertex_size) + "px",
-      top: String(CDict.y)+"px",
-      left: String(CDict.x-side_len)+"px"
+      top: String(CDict.y-15)+"px",
+      left: String(CDict.x-side_len/2-50)+"px"
     });
     $.each($(e).children(".probability"), function(i, el){
       $(el).css({
         top: String(side_len*5/6)+"px",
         left: String(side_len)+"px"
     })})
-    $(e).click(function(){
-      console.log("clicled hex ", c, r)
-    })
+
   })
 
+})
+
+$(".vertex").click(function(e){
+  e.css({"background-color": color})
 })
